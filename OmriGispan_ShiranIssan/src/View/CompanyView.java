@@ -31,7 +31,7 @@ public class CompanyView implements AbstractCompanyView {
 	private TitledPane addRoleToDepartmentTitledPane;
 	private TitledPane addEmployeeToRoleTitledPane;
 
-	//Departments Arrays 
+	//Departments Arrays
 	private ComboBox<String> departmentsCombo = new ComboBox<>();
 	private ArrayList<Department> departmentsList = new ArrayList<>();
 
@@ -56,8 +56,8 @@ public class CompanyView implements AbstractCompanyView {
 		
 		//Add nodes to main gridpane
 		gpRoot.add(lblMenu, 0, 0);
-		gpRoot.add(addDepartmentTitledPane, 0, 0);
-		gpRoot.add(addRoleToDepartmentTitledPane, 0, 1);
+		gpRoot.add(addDepartmentTitledPane, 0, 1);
+		gpRoot.add(addRoleToDepartmentTitledPane, 0, 2);
 
 		
 		
@@ -79,11 +79,13 @@ public class CompanyView implements AbstractCompanyView {
 		CheckBox isSync = new CheckBox("Employees synchronized by hours");
 		CheckBox canChangePref = new CheckBox("Can change the prefernces");
 		Button btnAddDepartment = new Button("Add Department");
-
+		
 		btnAddDepartment.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent action) {
-
+				for (GuiEventsListener l : allListeners) {
+					l.addDepartmentFromGui(nameOfDepartment.getText(), isSync.isSelected(), canChangePref.isSelected());
+				}
 			}
 		});
 		

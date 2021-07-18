@@ -28,7 +28,6 @@ public class Controller implements ModelEventsListener, GuiEventsListener {
 	@Override
 	public void addDepartmentFromGui(String name, boolean mustEmployeeSync, boolean canChangePreferences) {
 		company.addDepartment(name, mustEmployeeSync, canChangePreferences);
-
 	}
 
 	@Override
