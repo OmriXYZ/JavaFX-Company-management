@@ -22,7 +22,6 @@ public class Controller implements ModelEventsListener, GuiEventsListener {
 	@Override
 	public void setCompanyNameFromGui(String name) {
 		company.setName(name);
-		
 	}
 
 	@Override
