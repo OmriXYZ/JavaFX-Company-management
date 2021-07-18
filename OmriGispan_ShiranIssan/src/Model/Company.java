@@ -74,6 +74,11 @@ public class Company {
 	public void registerListener(ModelEventsListener listener) {
 		listeners.add(listener);
 	}
+
+	public void setName(String name) {
+		this.name = name;
+		
+	}
 	
 	
 	

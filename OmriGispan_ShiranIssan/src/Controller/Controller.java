@@ -21,7 +21,7 @@ public class Controller implements ModelEventsListener, GuiEventsListener {
 
 	@Override
 	public void setCompanyNameFromGui(String name) {
-		// TODO Auto-generated method stub
+		company.setName(name);
 		
 	}
 
@@ -49,8 +49,7 @@ public class Controller implements ModelEventsListener, GuiEventsListener {
 
 	@Override
 	public void addedDepartmentFromCompany(String name, boolean mustEmployeeSync, boolean canChangePreferences) {
-		// TODO Auto-generated method stub
-		
+		view.addDepartmentToGui(new Department(name, mustEmployeeSync, canChangePreferences));
 	}
 
 	@Override

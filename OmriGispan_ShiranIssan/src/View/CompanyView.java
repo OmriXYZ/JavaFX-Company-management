@@ -2,8 +2,11 @@ package View;
 
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import Model.Department;
 import Model.Role;
+import helpingmethods.CustomDialog;
 import helpingmethods.LimitedTextField;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -26,7 +29,6 @@ public class CompanyView implements AbstractCompanyView {
 	private ArrayList<GuiEventsListener> allListeners = new ArrayList<GuiEventsListener>();
 	
 	//Titled Panes//
-	private TitledPane addCompanyTitle;
 	private TitledPane addDepartmentTitledPane;
 	private TitledPane addRoleToDepartmentTitledPane;
 	private TitledPane addEmployeeToRoleTitledPane;
@@ -45,16 +47,27 @@ public class CompanyView implements AbstractCompanyView {
 		gpRoot.setVgap(10);
 		Label lblMenu = new Label("Please select an option:");
 		
+		CustomDialog setCompanyNameDialog = new CustomDialog();
+		while (setCompanyNameDialog.getResult() == null || setCompanyNameDialog.getResult() == "") {
+			setCompanyNameDialog.showAndWait();
+		}
+		for (GuiEventsListener l : allListeners) {
+			l.setCompanyNameFromGui(setCompanyNameDialog.getResult());
+		}
+		
+		
+		
 		//----PANES----//:
 		
 		//Add Department Pane//
 		GridPane departmentPane = addDepartmentBuildPane();
 		addDepartmentTitledPane = new TitledPane("Create department", departmentPane);
+		
 		//Add RoleToDepartment Pane//
 		GridPane rolePane = addRoleBuildPane();
 		addRoleToDepartmentTitledPane = new TitledPane("Create Role to Department", rolePane);
 		
-		//Add nodes to main gridpane
+		//Add nodes to main gridpane (All the titled panes)
 		gpRoot.add(lblMenu, 0, 0);
 		gpRoot.add(addDepartmentTitledPane, 0, 1);
 		gpRoot.add(addRoleToDepartmentTitledPane, 0, 2);
@@ -80,14 +93,18 @@ public class CompanyView implements AbstractCompanyView {
 		CheckBox canChangePref = new CheckBox("Can change the prefernces");
 		Button btnAddDepartment = new Button("Add Department");
 		
-		btnAddDepartment.setOnAction(new EventHandler<ActionEvent>() {
+		btnAddDepartment.setOnAction(new EventHandler<ActionEvent>() { //Event for addDepartment button
 			@Override
 			public void handle(ActionEvent action) {
 				for (GuiEventsListener l : allListeners) {
-					l.addDepartmentFromGui(nameOfDepartment.getText(), isSync.isSelected(), canChangePref.isSelected());
+					if (!nameOfDepartment.getText().isEmpty()) {
+						l.addDepartmentFromGui(nameOfDepartment.getText(), isSync.isSelected(), canChangePref.isSelected());
+					} else
+						dialog("Do not leave empty field please");
+						
 				}
 			}
-		});
+		}); //Event end
 		
 		gpRoot.add(lblDepartmentname, 0, 0);
 		gpRoot.add(nameOfDepartment, 1, 0);
@@ -161,7 +178,7 @@ public class CompanyView implements AbstractCompanyView {
 	public void addDepartmentToGui(Department department) {
 		departmentsList.add(department);
 		departmentsCombo.getItems().add(department.getName());
-		
+		dialog("Department " + "\"" + department.getName() + "\"" + " was added to the company");
 	}
 
 	@Override
@@ -175,6 +192,11 @@ public class CompanyView implements AbstractCompanyView {
 			String pref) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	//----Helping Methods----//
+	public void dialog(String msg) {
+		JOptionPane.showMessageDialog(null, msg);
 	}
 
 }
