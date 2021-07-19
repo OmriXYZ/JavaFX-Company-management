@@ -5,7 +5,8 @@ import Model.Role;
 
 public interface ModelEventsListener {
 	void setedCompanyNameFromCompany(String name);
-	void addedDepartmentFromCompany(String name, boolean mustEmployeeSync, boolean canChangePreferences);
-	void addedRoleFromCompany(Role role);
-	void addedEmployeeFromCompany(int iD, String name, String nameRole, String nameDepartment, int begHour, int endHour, String pref);
+	void addedDepartmentFromCompany(String departmentName);
+	void addedRoleFromCompany(String roleName, int departmentIndex);
+	void addedEmployeeFromCompany(String name, Role role, Department department,int begHour, String pref);
+	void sendCompanyDetails(String toString);
 }

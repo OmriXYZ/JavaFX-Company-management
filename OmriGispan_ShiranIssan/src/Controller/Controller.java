@@ -35,33 +35,34 @@ public class Controller implements ModelEventsListener, GuiEventsListener {
 	}
 
 	@Override
-	public void addEmployeeFromGui(int iD, String name, int indexRole, int indexDepartment, int begHour, int endHour,
-			String pref) {
-		company.addEmployee(iD, name, indexRole, indexDepartment, begHour, endHour, pref);
+	public void addEmployeeFromGui(String name, int indexRole, int indexDepartment, int begHour, String pref) throws Exception {
+		company.addEmployee(name, indexRole, indexDepartment, begHour, pref);
 	}
 
 	@Override
 	public void setedCompanyNameFromCompany(String name) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
-	public void addedDepartmentFromCompany(String name, boolean mustEmployeeSync, boolean canChangePreferences) {
-		view.addDepartmentToGui(new Department(name, mustEmployeeSync, canChangePreferences));
+	public void addedDepartmentFromCompany(String departmentName) {
+		view.addDepartmentToGui(departmentName);
 	}
 
 	@Override
-	public void addedRoleFromCompany(Role role) {
+	public void addedRoleFromCompany(String roleName, int departmentIndex) {
+		view.addRoleToGui(roleName, departmentIndex);
+	}
+
+	@Override
+	public void addedEmployeeFromCompany(String name, Role role, Department department, int begHour, String pref) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void addedEmployeeFromCompany(int iD, String name, String nameRole, String nameDepartment, int begHour,
-			int endHour, String pref) {
-		// TODO Auto-generated method stub
-		
+	public void sendCompanyDetails(String toString) {
+		view.addCompanyDetailsToGui(toString);
 	}
 	
 }

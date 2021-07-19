@@ -26,24 +26,36 @@ public class Company {
 	public void addDepartment(String name, boolean mustEmployeeSync, boolean canChangePreferences) {
 		Department dep = new Department(name, mustEmployeeSync, canChangePreferences);
 		departments.add(dep);
-		fireAddedDepartment(name, mustEmployeeSync, canChangePreferences);
+		fireAddedDepartment(name);
 	}
 	
 	public void addRole(String name, boolean mustEmployeeSync, boolean canChangePreferences, int indexDepartment) {
 		Role role = new Role(name, mustEmployeeSync, canChangePreferences);
 		departments.get(indexDepartment).addRoleToDepartment(role);
-		fireAddedRole(role);
+		fireAddedRole(name, indexDepartment);
 	}
 	
-	public void addEmployee(int ID, String name,int indexRole, int indexDepartment, int begHour, int endHour, String pref) {		
+	public void addEmployee(String name,int indexRole, int indexDepartment, int begHour, String pref) throws Exception {		
 		Department dep = departments.get(indexDepartment); //pointer for specific department
 		Role role = dep.getRole(indexRole); //pointer for specific role into department
-		Employee emp = new Employee(ID, name, role, dep, begHour, endHour, pref); //making employee
+		Employee emp = new Employee(name, role, dep, begHour, pref); //making employee
 		employees.add(emp);
 		role.addEmployeeToRole(emp); //add employee to role under department
-		fireAddedEmployee(ID, name, role.getName(), dep.getName(), begHour, endHour, pref);
+		fireAddedEmployee(name, role, dep, begHour, pref);
 	}
 
+	public void setName(String name) {
+		this.name = name;
+		
+	}
+	
+	public String toString() {
+		String str = "List of Departments:\n\n";
+		for (Department department : departments) {
+			str += department.toString() + "\n";
+		}
+		return str;
+	}
 
 
 	public void calcTotalEfficiency() {
@@ -53,21 +65,24 @@ public class Company {
 	}
 	
 	//----MVC----//
-	private void fireAddedEmployee(int ID, String name,String nameRole, String nameDepartment, int begHour, int endHour, String pref) {
+	private void fireAddedEmployee(String name,Role nameRole, Department nameDepartment, int begHour, String pref) {
 		for (ModelEventsListener l : listeners) {
-			l.addedEmployeeFromCompany(ID, name, nameRole, nameDepartment, begHour, endHour, pref);
+			l.addedEmployeeFromCompany(name, nameRole, nameDepartment, begHour, pref);
+			l.sendCompanyDetails(toString());
 		}
 	}
 	
-	private void fireAddedDepartment(String name, boolean mustEmployeeSync, boolean canChangePreferences) {
+	private void fireAddedDepartment(String departmentName) {
 		for (ModelEventsListener l : listeners) {
-			l.addedDepartmentFromCompany(name, mustEmployeeSync, canChangePreferences);
+			l.addedDepartmentFromCompany(departmentName);
+			l.sendCompanyDetails(toString());
 		}
 	}
 	
-	private void fireAddedRole(Role role) {
+	private void fireAddedRole(String roleName, int departmentIndex) {
 		for (ModelEventsListener l : listeners) {
-			l.addedRoleFromCompany(role);
+			l.addedRoleFromCompany(roleName, departmentIndex);
+			l.sendCompanyDetails(toString());
 		}
 	}
 	
@@ -75,10 +90,6 @@ public class Company {
 		listeners.add(listener);
 	}
 
-	public void setName(String name) {
-		this.name = name;
-		
-	}
 	
 	
 	
