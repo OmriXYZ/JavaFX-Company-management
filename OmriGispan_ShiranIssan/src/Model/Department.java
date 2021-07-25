@@ -1,21 +1,26 @@
 package Model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class Department implements Synchronizable, Preferences {
+public class Department implements Synchronizable, Preferences, Serializable {
 	private String name;
 	private boolean mustEmployeeSync;
 	private boolean canChangePreferences;
 	private ArrayList<Role> roles;
 	private double totalEfficiency;
-	
-	public Department(String name, boolean mustEmployeeSync, boolean canChangePreferences) {
+	private int begHour;
+	private int endHour;
+
+	public Department(String name) {
 		this.name = name;
-		this.mustEmployeeSync = mustEmployeeSync;
-		this.canChangePreferences = canChangePreferences;
+		this.mustEmployeeSync = false;
+		this.canChangePreferences = false;
 		this.roles = new ArrayList<>();
 		this.totalEfficiency = 0;
+		this.begHour = 8;
+		this.endHour = 17;
 	}
 	
 	public void addRoleToDepartment(Role role) {
@@ -23,17 +28,36 @@ public class Department implements Synchronizable, Preferences {
 	}
 
 	public void calcTotalEfficiency () {
-		for (int i = 0; i < roles.size(); i++) {
-			totalEfficiency += roles.get(i).getTotalEfficiency();
+		totalEfficiency = 0;
+//		if (!canChangePreferences) {
+//			for (Role role : roles) {
+//				role.changePreference(canChangePreferences);
+//			}
+//		}
+//		if (mustEmployeeSync) {
+//			for (Role role : roles) {
+//				role.sync(mustEmployeeSync, begHour, endHour);
+//			}
+//		}
+		for (Role role : roles) {
+			role.calcTotalEfficiency();
 		}
 	}
 	
 	public double getTotalEfficiency() {
+		totalEfficiency = 0;
+		for (Role role : roles) {
+			totalEfficiency += role.getTotalEfficiency();
+		}
 		return totalEfficiency;
 	}
 	
 	public Role getRole(int indexRole) {
 		return roles.get(indexRole);
+	}
+	
+	public ArrayList<Role> getRoles() {
+		return roles;
 	}
 	
 	public String getName() {
@@ -49,23 +73,32 @@ public class Department implements Synchronizable, Preferences {
 	}
 
 	@Override
-	public void sync(boolean b) {
-		for (Role role : roles) {
-			role.sync(b);
-		}
+	public void sync(boolean b, int syncHour, int endHour) {
+		this.mustEmployeeSync = b;
+		this.begHour = syncHour;
+		this.endHour = endHour;
+//		for (Role role : roles) {
+//			role.sync(b);
+//		}
 	}
 
 	@Override
 	public void changePreference(boolean b) {
-		for (Role role : roles) {
-			role.changePreference(b);
-		}		
+		this.canChangePreferences = b;
+//		for (Role role : roles) {
+//			role.changePreference(b);
+//		}
+	}
+	
+	public int getSyncHour() {
+		return begHour;
 	}
 	
 	public String toString() {
 		String str = "Department: " + this.name + "\n";
 		if (mustEmployeeSync) {
 			str += "Employees must be synchronized by hours\n";
+			str += "Employees works at: " + begHour + " - " + endHour + "\n";
 		} else
 			str += "Employees don't need to be synchronized by hours\n";
 		if (canChangePreferences) {
@@ -77,6 +110,13 @@ public class Department implements Synchronizable, Preferences {
 			str += role.toString();
 		}
 		return str;
+	}
+	
+	public boolean equals(Object d) {
+		if (this.name.equalsIgnoreCase(((Department) d).name)) {
+			return true;
+		} else
+			return false;
 	}
 
 	
