@@ -308,6 +308,9 @@ public class CompanyView implements AbstractCompanyView {
 		TextField nameOfEmployee = new TextField();
 		Label lblHoursOnMonth = new Label("How many hours the employee worked a month?");
 		TextField hoursMonthField = new TextField();
+		Label lblPayPerHour = new Label("Hourly pay:");
+		TextField hourlyPayField = new TextField();
+
 		
 		//Preference Hours
 		Spinner<Integer> begHour = new Spinner<>(0, 24, 8);
@@ -430,13 +433,13 @@ public class CompanyView implements AbstractCompanyView {
 					for (GuiEventsListener l : allListeners) {
 						try {
 							if (radioButtonSalaryType.getSelectedToggle() == c1) {
-								if (!hoursMonthField.getText().isEmpty()) {
-									l.addEmployeeFromGui(nameOfEmployee.getText(), indexRoleAddEmployee, indexDepAddEmployee, begHour.getValue(), radioButtonPref.getSelectedToggle().getUserData().toString(), radioButtonSalaryType.getSelectedToggle().getUserData().toString(), Integer.parseInt(hoursMonthField.getText()));
+								if (!hoursMonthField.getText().isEmpty() && hourlyPayField.getText().isEmpty()) {
+									l.addEmployeeFromGui(nameOfEmployee.getText(), indexRoleAddEmployee, indexDepAddEmployee, begHour.getValue(), radioButtonPref.getSelectedToggle().getUserData().toString(), radioButtonSalaryType.getSelectedToggle().getUserData().toString(), Integer.parseInt(hoursMonthField.getText()), Integer.parseInt(hourlyPayField.getText()));
 								} else 	
 									dialog("Do not leave empty fields please");
 
 							} else
-								l.addEmployeeFromGui(nameOfEmployee.getText(), indexRoleAddEmployee, indexDepAddEmployee, begHour.getValue(), radioButtonPref.getSelectedToggle().getUserData().toString(), radioButtonSalaryType.getSelectedToggle().getUserData().toString(), 160);
+								l.addEmployeeFromGui(nameOfEmployee.getText(), indexRoleAddEmployee, indexDepAddEmployee, begHour.getValue(), radioButtonPref.getSelectedToggle().getUserData().toString(), radioButtonSalaryType.getSelectedToggle().getUserData().toString(), 160, Integer.parseInt(hourlyPayField.getText()));
 						} catch (NumberFormatException e) {
 							dialog("Can't use letters for hours in month, ONLY number");
 						} catch (Exception e) {
@@ -451,23 +454,25 @@ public class CompanyView implements AbstractCompanyView {
 		
 		gpRoot.add(lblEmployeeName, 0, 0);
 		gpRoot.add(nameOfEmployee, 1, 0);
-		gpRoot.add(lblEmployeeType, 0, 1);
-		gpRoot.add(c1, 0, 2);
-		gpRoot.add(lblHoursOnMonth, 0, 3);
-		gpRoot.add(hoursMonthField, 1, 3);
-		gpRoot.add(c2, 0, 4);
-		gpRoot.add(c3, 0, 5);
-		gpRoot.add(lblDepartmentChoose, 0, 6);
-		gpRoot.add(depsComboEmployees, 0, 7);
-		gpRoot.add(lblRoleChoose, 0, 8);
-	    gpRoot.add(rolesComboEmployee, 0, 9);
-	    gpRoot.add(lblEmployeePref, 0, 10);
-		gpRoot.add(c4, 0, 11);
-		gpRoot.add(c5, 0, 12);
-		gpRoot.add(gridPaneForPrefHours, 1, 12);
-		gpRoot.add(c6, 0, 13);
-		gpRoot.add(c7, 0, 14);
-	    gpRoot.add(btnCreateEmployee, 0, 15);
+		gpRoot.add(lblPayPerHour, 0, 1);
+		gpRoot.add(hourlyPayField, 1, 1);
+		gpRoot.add(lblEmployeeType, 0, 2);
+		gpRoot.add(c1, 0, 3);
+		gpRoot.add(lblHoursOnMonth, 0, 4);
+		gpRoot.add(hoursMonthField, 1, 4);
+		gpRoot.add(c2, 0, 5);
+		gpRoot.add(c3, 0, 6);
+		gpRoot.add(lblDepartmentChoose, 0, 7);
+		gpRoot.add(depsComboEmployees, 0, 8);
+		gpRoot.add(lblRoleChoose, 0, 9);
+	    gpRoot.add(rolesComboEmployee, 0, 10);
+	    gpRoot.add(lblEmployeePref, 0, 11);
+		gpRoot.add(c4, 0, 12);
+		gpRoot.add(c5, 0, 13);
+		gpRoot.add(gridPaneForPrefHours, 1, 13);
+		gpRoot.add(c6, 0, 14);
+		gpRoot.add(c7, 0, 15);
+	    gpRoot.add(btnCreateEmployee, 0, 16);
 
 		return gpRoot;
 	}
