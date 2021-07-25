@@ -50,17 +50,17 @@ public class Company implements Serializable {
 		}
 	}
 	
-	public void addEmployee(String name,int indexRole, int indexDepartment, int begHour, String pref, String typeOfWorker, int hoursMonth) throws Exception {
+	public void addEmployee(String name,int indexRole, int indexDepartment, int begHour, String pref, String typeOfWorker, int hoursMonth, int payPerHour) throws Exception {
 		Department dep = departments.get(indexDepartment); //pointer for specific department
 		Role role = dep.getRole(indexRole); //pointer for specific role into department
 		Employee emp;
 
 			if (typeOfWorker == "HOUR") {
-				emp = new EmployeeByHours(name, role, dep, begHour, pref, hoursMonth); //making employee by Hours
+				emp = new EmployeeByHours(name, role, dep, begHour, pref, payPerHour, hoursMonth); //making employee by Hours
 			} else if (typeOfWorker == "BASE") {
-				emp = new EmployeeByBase(name, role, dep, begHour, pref);
+				emp = new EmployeeByBase(name, role, dep, begHour, payPerHour, pref);
 			} else //BASE BONUS
-				emp = new EmployeeByBaseBonus(name, role, dep, begHour, pref);
+				emp = new EmployeeByBaseBonus(name, role, dep, begHour, payPerHour, pref);
 		
 		employees.add(emp);
 		role.addEmployeeToRole(emp); //add employee to role under department

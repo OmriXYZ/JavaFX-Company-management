@@ -14,6 +14,7 @@ public class Employee implements Preferences, Synchronizable, Serializable {
 	protected boolean canChangePreferences;
 	protected int salary;
 	protected String type;
+	protected int payPerHour;
 	
 	public static enum Preference {
 		EARLIER,
@@ -24,7 +25,7 @@ public class Employee implements Preferences, Synchronizable, Serializable {
 	
 	private Preference pref;
 	
-	public Employee(String name, Role role, Department department,int prefHour, String pref) throws Exception {
+	public Employee(String name, Role role, Department department,int prefHour, int payPerHour, String pref) throws Exception {
 		this.name = name;
 		this.role = role;
 		this.department = department;
@@ -35,6 +36,7 @@ public class Employee implements Preferences, Synchronizable, Serializable {
 		this.efficiency = 0;
 		this.different = 0;
 		this.salary = 0;
+		this.payPerHour = payPerHour;
 		mustEmployeeSync = false;
 		canChangePreferences = true;		
 	}

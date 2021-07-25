@@ -12,6 +12,8 @@ public class Department implements Synchronizable, Preferences, Serializable {
 	private double totalEfficiency;
 	private int begHour;
 	private int endHour;
+	private final int BASEHOURS = 160;
+
 
 	public Department(String name) {
 		this.name = name;
@@ -117,6 +119,10 @@ public class Department implements Synchronizable, Preferences, Serializable {
 			return true;
 		} else
 			return false;
+	}
+	
+	public int getBASEHOURS() {
+		return BASEHOURS;
 	}
 
 	

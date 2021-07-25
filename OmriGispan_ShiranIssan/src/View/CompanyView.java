@@ -67,16 +67,16 @@ public class CompanyView implements AbstractCompanyView {
 	private ComboBox<String> depsComboSyncPrefRoles = new ComboBox<>(); 	//Departments ComboBox - Change sync&pref roles title pane
 	private ComboBox<String> rolesComboSyncPrefRoles = new ComboBox<>(); 	//Roles ComboBox - Change sync&pref roles title pane
 	
+	//ArrayList for efficiency table
 	private ArrayList<String> departmentsNames = new ArrayList<>();
 	private ArrayList<String> employeesNames = new ArrayList<>();
 
-	//Roles ArrayList - Contains ComboBox roles divided by department index
+	//Roles ArrayList<ComboBox string> - Contains ComboBox roles divided by department index
 	private ArrayList<ComboBox<String>> arrayOfRolesByIndex = new ArrayList<ComboBox<String>>(); //Roles ArrayList - add employee title pane
 
 	//Selectors index
 	private int indexDepAddRole = -1;		 //Department index - Add role title pane
 	private int indexDepAddEmployee = -1;	 //Department index - Add Employee title pane
-	private int indexRoleAddEmployee = -1;	 //Role index - Create Employee title pane
 	private int indexDepSyncPrefDeps = -1;	 //Department index - Change sync&pref departments title pane
 	private int indexDepSyncPrefRoles = -1;	 //Department index - Change sync&pref roles title pane
 	private int indexRoleSyncPrefRoles = -1; //Role index - Change sync&pref roles title pane
@@ -214,15 +214,15 @@ public class CompanyView implements AbstractCompanyView {
 		TextField nameOfDepartment = new TextField();
 		Button btnAddDepartment = new Button("Add Department");
 		
-		btnAddDepartment.setOnAction(new EventHandler<ActionEvent>() { //Event for addDepartment button
+		//Event for addDepartment button
+		btnAddDepartment.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent action) {
 				for (GuiEventsListener l : allListeners) {
 					if (!nameOfDepartment.getText().isEmpty()) {
 						l.addDepartmentFromGui(nameOfDepartment.getText());
 					} else
-						dialog("Do not leave empty field please");
-						
+						dialog("Do not leave empty field please");	
 				}
 			}
 		}); //Event end
@@ -238,6 +238,7 @@ public class CompanyView implements AbstractCompanyView {
 	
 	private GridPane addRoleBuildPane() {
 		
+		//Making the gridpane
 		GridPane gpRoot = new GridPane();
 		gpRoot.setPadding(new Insets(10));
 		gpRoot.setHgap(10);
@@ -248,20 +249,17 @@ public class CompanyView implements AbstractCompanyView {
 		TextField nameOfRole = new TextField();
 		Button btnAddRole = new Button("Add Role to Department");
 		Label lblRoleList = new Label("Choose Department to assign the role:");
-		//Check index of selected department
-		depsComboAddRole.setOnAction((event) -> {
-		    indexDepAddRole = depsComboAddRole.getSelectionModel().getSelectedIndex();
-		});
 		
+		//Button add role event
 		btnAddRole.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent action) {
+				indexDepAddRole = depsComboAddRole.getSelectionModel().getSelectedIndex(); //Index of selected department
 				for (GuiEventsListener l : allListeners) {
 					if (!nameOfRole.getText().isEmpty() && indexDepAddRole != -1 ) {
 						l.addRoleFromGui(nameOfRole.getText(), indexDepAddRole);
 					} else
 						dialog("Do not leave empty field please");
-						
 				}
 			}
 		});
@@ -407,8 +405,6 @@ public class CompanyView implements AbstractCompanyView {
 			}
 		});
 		
-		
-
 		Label lblDepartmentChoose = new Label("Choose Department:");
 		Label lblRoleChoose = new Label("Choose Role to assign:");
 		
@@ -416,24 +412,17 @@ public class CompanyView implements AbstractCompanyView {
 		
 		//----Action event for COMBOBOX----//
 		depsComboEmployees.setOnAction((event) -> {
-			indexDepAddEmployee = depsComboEmployees.getSelectionModel().getSelectedIndex(); //Department Index
+			int indexDepAddEmployee = depsComboEmployees.getSelectionModel().getSelectedIndex(); //Department Index
 			rolesComboEmployee.getItems().setAll(arrayOfRolesByIndex.get(indexDepAddEmployee).getItems());
-		});
-		
-		depsComboEmployees.setOnMouseClicked((event) -> {
-			if (!depsComboEmployees.getItems().isEmpty() && indexDepAddEmployee != -1) { //Prevent errors
-			    rolesComboEmployee.getItems().setAll(arrayOfRolesByIndex.get(indexDepAddEmployee).getItems());
-			}
-		});
-		
-		rolesComboEmployee.setOnAction((event) -> {
-		    indexRoleAddEmployee = rolesComboEmployee.getSelectionModel().getSelectedIndex(); //Role Index
 		});
 		
 		//----Action event for Button----//
 		btnCreateEmployee.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent action) {
+				int indexRoleAddEmployee = rolesComboEmployee.getSelectionModel().getSelectedIndex(); //Role Index
+				int indexDepAddEmployee = depsComboEmployees.getSelectionModel().getSelectedIndex(); //Department Index
+
 				boolean emptyComboBoxFields = depsComboEmployees.getSelectionModel().isEmpty() || rolesComboEmployee.getSelectionModel().isEmpty();
 				if (nameOfEmployee.getText().isEmpty() || emptyComboBoxFields) {
 					dialog("Do not leave empty fields please");
@@ -499,12 +488,6 @@ public class CompanyView implements AbstractCompanyView {
 		lblDescription.setTextFill(Color.RED);
 		lblDescription2.setTextFill(Color.RED);
 		
-//		Tooltip tool = new Tooltip("* If you select Employee synchronization by hours, it forces all roles to be at the time you set");
-//		tool.setShowDelay(Duration.millis(50));
-//		tool.setHideDelay(Duration.ZERO);
-//		lblDescription.setTooltip(tool);
-		
-
 		GridPane gridPaneForPrefHours = new GridPane();
 		gridPaneForPrefHours.setPadding(new Insets(2));
 		gridPaneForPrefHours.setHgap(2);
@@ -672,16 +655,22 @@ public class CompanyView implements AbstractCompanyView {
 		canChangePref.selectedProperty().addListener(
 			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
 					for (GuiEventsListener l : allListeners) {
-						l.setPrefRoleFromGui(indexDepSyncPrefRoles, indexRoleSyncPrefRoles, canChangePref.isSelected());
+						if (!l.getPrefDepartmentFromGui(indexDepSyncPrefRoles)) {
+							dialog("The choice does not matter because department force all roles not to allow employees to change their preference");
+						} else
+							l.setPrefRoleFromGui(indexDepSyncPrefRoles, indexRoleSyncPrefRoles, canChangePref.isSelected());
 					}
 			      });
-		isSync.selectedProperty().addListener(
-			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
-						syncHour.setDisable(!isSync.isSelected());
+		isSync.selectedProperty()
+				.addListener((ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
+					syncHour.setDisable(!isSync.isSelected());
 					for (GuiEventsListener l : allListeners) {
-						l.setSyncRoleFromGui(indexDepSyncPrefRoles, indexRoleSyncPrefRoles, isSync.isSelected(), syncHour.getValue(), endHour.getValue());
+						if (l.getSyncDepartmentFromGui(indexDepSyncPrefRoles)) {
+							dialog("The choice does not matter because department force all roles to be synchronized");
+						} else
+							l.setSyncRoleFromGui(indexDepSyncPrefRoles, indexRoleSyncPrefRoles, isSync.isSelected(), syncHour.getValue(), endHour.getValue());
 					}
-			      });
+				});
 		
 		
 		gpRoot.add(lblDepartmentChoise, 0, 0);

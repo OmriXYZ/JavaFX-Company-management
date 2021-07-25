@@ -46,8 +46,8 @@ public class Controller implements ModelEventsListener, GuiEventsListener {
 	}
 
 	@Override
-	public void addEmployeeFromGui(String name, int indexRole, int indexDepartment, int begHour, String pref, String typeOfWorker, int hoursMonth) throws Exception {
-		company.addEmployee(name, indexRole, indexDepartment, begHour, pref, typeOfWorker, hoursMonth);
+	public void addEmployeeFromGui(String name, int indexRole, int indexDepartment, int begHour, String pref, String typeOfWorker, int hoursMonth, int payPerHour) throws Exception {
+		company.addEmployee(name, indexRole, indexDepartment, begHour, pref, typeOfWorker, hoursMonth, payPerHour);
 	}
 
 	@Override
