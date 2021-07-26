@@ -8,7 +8,8 @@ public class EmployeeByBaseBonus extends EmployeeByBase {
 	}
 	
 	public void calculateSalary() {
-		salary = department.getBASEHOURS() * payPerHour;
+		super.calculateSalary();
+		salary += 1111;
 	}
 
 }

@@ -89,12 +89,20 @@ public class Controller implements ModelEventsListener, GuiEventsListener {
 
 	@Override
 	public void setPrefRoleFromGui(int indexDepartment, int indexRole, boolean b) {
-		company.setPrefRoleFromGui(indexDepartment, indexRole, b);
+		try {
+			company.setPrefRoleFromGui(indexDepartment, indexRole, b);
+		} catch (Exception e) {
+			view.dialog(e.getMessage());
+		}
 	}
 
 	@Override
 	public void setSyncRoleFromGui(int indexDepartment, int indexRole, boolean b, int syncHour, int endHour) {
-		company.setSyncRoleFromGui(indexDepartment, indexRole, b, syncHour, endHour);
+		try {
+			company.setSyncRoleFromGui(indexDepartment, indexRole, b, syncHour, endHour);
+		} catch (Exception e) {
+			view.dialog(e.getMessage());
+		}
 		
 	}
 

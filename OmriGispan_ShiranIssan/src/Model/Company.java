@@ -80,7 +80,6 @@ public class Company implements Serializable {
 		return str;
 	}
 
-
 	public void calcTotalEfficiency() {
 		totalEfficiency = 0;
 		for (int i = 0; i < departments.size(); i++) {
@@ -105,18 +104,31 @@ public class Company implements Serializable {
 	}
 	
 	
-	public void setPrefRoleFromGui(int indexDepartment, int indexRole, boolean b) {
-		departments.get(indexDepartment).getRole(indexRole).changePreference(b);
-		for (ModelEventsListener l : listeners) {
-			l.sendCompanyDetails(toString());
+	public void setPrefRoleFromGui(int indexDepartment, int indexRole, boolean b) throws Exception {
+		boolean cannotChangePreference = !departments.get(indexDepartment).getCanChangePreferences();
+		if (cannotChangePreference) {
+			throw new Exception("The choice does not matter because department force all roles not to allow employees to change their preference");
+		} else {
+			departments.get(indexDepartment).getRole(indexRole).changePreference(b);
+			for (ModelEventsListener l : listeners) {
+				l.sendCompanyDetails(toString());
+			}
 		}
+		
 	}
 	
-	public void setSyncRoleFromGui(int indexDepartment, int indexRole, boolean b, int syncHour, int endHour) {
-		departments.get(indexDepartment).getRole(indexRole).sync(b, syncHour, endHour);
-		for (ModelEventsListener l : listeners) {
-			l.sendCompanyDetails(toString());
+	public void setSyncRoleFromGui(int indexDepartment, int indexRole, boolean b, int syncHour, int endHour) throws Exception {
+		boolean syncEmployees = departments.get(indexDepartment).getMustEmployeeSync();
+		if (syncEmployees) {
+			throw new Exception("The choice does not matter because department force all roles to be synchronized");
+		} else {
+			departments.get(indexDepartment).getRole(indexRole).sync(b, syncHour, endHour);
+			for (ModelEventsListener l : listeners) {
+				l.sendCompanyDetails(toString());
+			}
 		}
+
+
 	}
 	
 	public boolean getPrefDepartmentFromGui(int indexDepartment) {

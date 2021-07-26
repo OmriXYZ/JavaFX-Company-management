@@ -131,8 +131,6 @@ public class CompanyView implements AbstractCompanyView {
 			}
 		}); //Event end
 		
-
-		
 		//Scroll those titlepanes if necessary
 		scrollForTitledPanes = new ScrollPane(gpRoot);
 		
@@ -140,7 +138,6 @@ public class CompanyView implements AbstractCompanyView {
 		CustomDialog loadDataDialog = new CustomDialog();
 		loadDataDialog.showAndWait();
 		toLoadData = loadDataDialog.getResult();
-
 		//CustomDialog-END
 		
 		Label lblMenu = new Label("Hello " + companyName + ", Please select an option:"); //Welcome MSG
@@ -433,7 +430,7 @@ public class CompanyView implements AbstractCompanyView {
 					for (GuiEventsListener l : allListeners) {
 						try {
 							if (radioButtonSalaryType.getSelectedToggle() == c1) {
-								if (!hoursMonthField.getText().isEmpty() && hourlyPayField.getText().isEmpty()) {
+								if (!hoursMonthField.getText().isEmpty() && !hourlyPayField.getText().isEmpty()) {
 									l.addEmployeeFromGui(nameOfEmployee.getText(), indexRoleAddEmployee, indexDepAddEmployee, begHour.getValue(), radioButtonPref.getSelectedToggle().getUserData().toString(), radioButtonSalaryType.getSelectedToggle().getUserData().toString(), Integer.parseInt(hoursMonthField.getText()), Integer.parseInt(hourlyPayField.getText()));
 								} else 	
 									dialog("Do not leave empty fields please");
@@ -616,8 +613,6 @@ public class CompanyView implements AbstractCompanyView {
 
 		
 		//create nodes
-
-
 		isSync.setDisable(true);
 		canChangePref.setDisable(true);
 		syncHour.setDisable(true);
@@ -656,26 +651,30 @@ public class CompanyView implements AbstractCompanyView {
 
 			}
 		});
+		
 
-		canChangePref.selectedProperty().addListener(
-			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
-					for (GuiEventsListener l : allListeners) {
-						if (!l.getPrefDepartmentFromGui(indexDepSyncPrefRoles)) {
-							dialog("The choice does not matter because department force all roles not to allow employees to change their preference");
-						} else
-							l.setPrefRoleFromGui(indexDepSyncPrefRoles, indexRoleSyncPrefRoles, canChangePref.isSelected());
-					}
-			      });
-		isSync.selectedProperty()
-				.addListener((ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
-					syncHour.setDisable(!isSync.isSelected());
-					for (GuiEventsListener l : allListeners) {
-						if (l.getSyncDepartmentFromGui(indexDepSyncPrefRoles)) {
-							dialog("The choice does not matter because department force all roles to be synchronized");
-						} else
-							l.setSyncRoleFromGui(indexDepSyncPrefRoles, indexRoleSyncPrefRoles, isSync.isSelected(), syncHour.getValue(), endHour.getValue());
-					}
-				});
+		canChangePref.setOnAction((event) -> {
+			for (GuiEventsListener l : allListeners) {
+				l.setPrefRoleFromGui(indexDepSyncPrefRoles, indexRoleSyncPrefRoles, canChangePref.isSelected());
+			}
+		});
+		
+		isSync.setOnAction((event) -> {
+			for (GuiEventsListener l : allListeners) {
+				l.setSyncRoleFromGui(indexDepSyncPrefRoles, indexRoleSyncPrefRoles, isSync.isSelected(), syncHour.getValue(), endHour.getValue());
+			}
+		});
+
+//		isSync.selectedProperty()
+//				.addListener((ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
+//					syncHour.setDisable(!isSync.isSelected());
+//					for (GuiEventsListener l : allListeners) {
+//						if (l.getSyncDepartmentFromGui(indexDepSyncPrefRoles)) {
+//							dialog("The choice does not matter because department force all roles to be synchronized");
+//						} else
+//							
+//					}
+//				});
 		
 		
 		gpRoot.add(lblDepartmentChoise, 0, 0);

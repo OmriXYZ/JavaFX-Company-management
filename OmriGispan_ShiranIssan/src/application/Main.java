@@ -17,11 +17,6 @@ public class Main extends Application {
 		Company company = new Company("");
 		AbstractCompanyView theView1 = new CompanyView(primaryStage);
 		Controller controller1 = new Controller(company, theView1);
-//		company.addDepartment("נגרייה");
-//		company.addRole("נגר", 0);
-//		company.setPrefRoleFromGui(0, 0, true);
-//		company.setPrefDepartmentFromGui(0, true);
-//		company.addEmployee("עמרם", 0, 0, 13, "LATER", "HOUR", 120);
 		theView1.loadData();
 	}
 	
