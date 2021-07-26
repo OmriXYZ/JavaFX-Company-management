@@ -16,6 +16,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.css.converter.EffectConverter;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -24,10 +25,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Spinner;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -35,7 +39,10 @@ import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
+import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.effect.Effect;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -95,15 +102,18 @@ public class CompanyView implements AbstractCompanyView {
 
 	public CompanyView(Stage stage) throws Exception {
 		
+		TabPane tabPane = new TabPane();
+		
 		//Set View Settings//
 		stage.setTitle("Company Menu");
+
 		GridPane gpRoot = new GridPane();
 		gpRoot.setPadding(new Insets(10));
 		gpRoot.setHgap(10);
 		gpRoot.setVgap(10);
 		//Save and Exit button
 		Button btnSaveAndExit = new Button("Save and exit");
-		btnSaveAndExit.setStyle("-fx-font: 16 arial;-fx-text-fill: black;");
+		//btnSaveAndExit.setStyle("-fx-font: 16 arial;");
 		btnSaveAndExit.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent action) {
@@ -116,7 +126,7 @@ public class CompanyView implements AbstractCompanyView {
 		
 		//Close title panes button
 		Button btnExpandedOff = new Button("Close everything");
-		btnExpandedOff.setStyle("-fx-font: 10 arial;-fx-text-fill: red;");
+		btnExpandedOff.setStyle("-fx-font: 11 arial;-fx-text-fill: red;");
 		btnExpandedOff.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent action) {
@@ -142,60 +152,96 @@ public class CompanyView implements AbstractCompanyView {
 		
 		Label lblMenu = new Label("Hello " + companyName + ", Please select an option:"); //Welcome MSG
 		
-		//----PANES----//:
+//		//----PANES----//:
+//		
+//		//Add Department Pane//
+//		GridPane departmentPane = addDepartmentBuildPane();
+//		addDepartmentTitledPane = new TitledPane("Create department", departmentPane);
+//		addDepartmentTitledPane.setExpanded(false);
+//
+//		
+//		//Add RoleToDepartment Pane//
+//		GridPane rolePane = addRoleBuildPane();
+//		addRoleToDepartmentTitledPane = new TitledPane("Create Role to Department", rolePane);
+//		addRoleToDepartmentTitledPane.setExpanded(false);
+//
+//		
+//		//Add Show Details Pane//
+//		GridPane detailsPane = showDetailsTBuildPane();
+//		showDetailsTitledPane = new TitledPane("Show Company Details", detailsPane);
+//		showDetailsTitledPane.setExpanded(false);
+//
+//		//Add EmployeeToRole Pane//
+//		GridPane employeePane = addEmployeeBuildPane();
+//		addEmployeeToRoleTitledPane = new TitledPane("Add Employee to Department and assign a role", employeePane);
+//		addEmployeeToRoleTitledPane.setExpanded(false);
+//
+//		//Change department pref and sync Pane//
+//		GridPane changeDepartmentPrefSync = changeDepartmentPrefSyncBuildPane();
+//		changeDepartmentPrefSyncPane = new TitledPane("Change Departments preference requirement and sync workers", changeDepartmentPrefSync);
+//		changeDepartmentPrefSyncPane.setExpanded(false);
+//		
+//		//Change role pref and sync Pane//
+//		GridPane changeRolePrefSync = changeRolePrefSyncBuildPane();
+//		changeRolePrefSyncPane = new TitledPane("Change Roles preference requirement and sync workers", changeRolePrefSync);
+//		changeRolePrefSyncPane.setExpanded(false);
+//		
+//		//Change role pref and sync Pane//
+//		GridPane showResultsPane = showResultsBuildPane();
+//		showTheResultPane = new TitledPane("Show profit or loss for company, departments or employees", showResultsPane);
+//		showTheResultPane.setExpanded(false);
+//
+//		//Add nodes and TitlePanes to main gridpane
+//		gpRoot.add(lblMenu, 0, 0);
+//		gpRoot.add(addDepartmentTitledPane, 0, 1);
+//		gpRoot.add(addRoleToDepartmentTitledPane, 0, 2);
+//		gpRoot.add(addEmployeeToRoleTitledPane, 0, 3);
+//		gpRoot.add(showDetailsTitledPane, 0, 4);
+//		gpRoot.add(changeDepartmentPrefSyncPane, 0, 5);
+//		gpRoot.add(changeRolePrefSyncPane, 0, 6);
+//		gpRoot.add(showTheResultPane, 0, 7);
+//		gpRoot.add(btnSaveAndExit, 0, 8);
+//		gpRoot.add(btnExpandedOff, 1, 1);
 		
-		//Add Department Pane//
-		GridPane departmentPane = addDepartmentBuildPane();
-		addDepartmentTitledPane = new TitledPane("Create department", departmentPane);
-		addDepartmentTitledPane.setExpanded(false);
-
 		
-		//Add RoleToDepartment Pane//
-		GridPane rolePane = addRoleBuildPane();
-		addRoleToDepartmentTitledPane = new TitledPane("Create Role to Department", rolePane);
-		addRoleToDepartmentTitledPane.setExpanded(false);
 
+		ContextMenu contextMenu = new ContextMenu();
+		tabPane.setContextMenu(contextMenu);
+		tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 		
-		//Add Show Details Pane//
-		GridPane detailsPane = showDetailsTBuildPane();
-		showDetailsTitledPane = new TitledPane("Show Company Details", detailsPane);
-		showDetailsTitledPane.setExpanded(false);
-
-		//Add EmployeeToRole Pane//
-		GridPane employeePane = addEmployeeBuildPane();
-		addEmployeeToRoleTitledPane = new TitledPane("Add Employee to Department and assign a role", employeePane);
-		addEmployeeToRoleTitledPane.setExpanded(false);
-
-		//Change department pref and sync Pane//
-		GridPane changeDepartmentPrefSync = changeDepartmentPrefSyncBuildPane();
-		changeDepartmentPrefSyncPane = new TitledPane("Change Departments preference requirement and sync workers", changeDepartmentPrefSync);
-		changeDepartmentPrefSyncPane.setExpanded(false);
+		Tab addDepTab = new Tab("Add department");
+		addDepTab.setContent(addDepartmentBuildPane());
+		Tab addRoleTab = new Tab("Add role");
+		addRoleTab.setContent(addRoleBuildPane());
+		Tab addEmployeeTab = new Tab("Add employee");
+		addEmployeeTab.setContent(addEmployeeBuildPane());
+		Tab showDetailsTab = new Tab("Show details");
+		showDetailsTab.setContent(showDetailsTBuildPane());
+		Tab changeDepTab = new Tab("Change departments options");
+		changeDepTab.setContent(changeDepartmentPrefSyncBuildPane());
+		Tab changeRoleTab = new Tab("Change roles options");
+		changeRoleTab.setContent(changeRolePrefSyncBuildPane());
+		Tab showEffTab = new Tab("Show profit or loss");
+		showEffTab.setContent(showResultsBuildPane());
 		
-		//Change role pref and sync Pane//
-		GridPane changeRolePrefSync = changeRolePrefSyncBuildPane();
-		changeRolePrefSyncPane = new TitledPane("Change Roles preference requirement and sync workers", changeRolePrefSync);
-		changeRolePrefSyncPane.setExpanded(false);
+		tabPane.getTabs().add(addDepTab);
+		tabPane.getTabs().add(addRoleTab);
+		tabPane.getTabs().add(addEmployeeTab);
+		tabPane.getTabs().add(showDetailsTab);
+		tabPane.getTabs().add(changeDepTab);
+		tabPane.getTabs().add(changeRoleTab);
+		tabPane.getTabs().add(showEffTab);
 		
-		//Change role pref and sync Pane//
-		GridPane showResultsPane = showResultsBuildPane();
-		showTheResultPane = new TitledPane("Show profit or loss for company, departments or employees", showResultsPane);
-		showTheResultPane.setExpanded(false);
-
-		//Add nodes and TitlePanes to main gridpane
-		gpRoot.add(lblMenu, 0, 0);
-		gpRoot.add(addDepartmentTitledPane, 0, 1);
-		gpRoot.add(addRoleToDepartmentTitledPane, 0, 2);
-		gpRoot.add(addEmployeeToRoleTitledPane, 0, 3);
-		gpRoot.add(showDetailsTitledPane, 0, 4);
-		gpRoot.add(changeDepartmentPrefSyncPane, 0, 5);
-		gpRoot.add(changeRolePrefSyncPane, 0, 6);
-		gpRoot.add(showTheResultPane, 0, 7);
+		gpRoot.add(tabPane, 0, 0);
 		gpRoot.add(btnSaveAndExit, 0, 8);
-		gpRoot.add(btnExpandedOff, 1, 1);
-
-		stage.setScene(new Scene(scrollForTitledPanes, 730, 850));
-		stage.show();
+		gpRoot.setStyle("-fx-font: 14 arial;");
 		
+		//stage.setScene(new Scene(scrollForTitledPanes, 730, 850));
+		stage.setScene(new Scene(gpRoot, 950, 850));
+		//stage.getScene().getStylesheets().add("-fx-font: 18 arial;");
+		//stage.getScene().getStylesheets().add(getClass().getResource("dark_theme.css").toString());
+		
+		stage.show();
 	}
 	
 //----Making The Grid Panes----//
@@ -227,8 +273,6 @@ public class CompanyView implements AbstractCompanyView {
 		gpRoot.add(lblDepartmentname, 0, 0);
 		gpRoot.add(nameOfDepartment, 1, 0);
 		gpRoot.add(btnAddDepartment, 0, 1);
-
-
 		
 		return gpRoot;
 	}
@@ -660,6 +704,7 @@ public class CompanyView implements AbstractCompanyView {
 		});
 		
 		isSync.setOnAction((event) -> {
+			syncHour.setDisable(!isSync.isSelected());
 			for (GuiEventsListener l : allListeners) {
 				l.setSyncRoleFromGui(indexDepSyncPrefRoles, indexRoleSyncPrefRoles, isSync.isSelected(), syncHour.getValue(), endHour.getValue());
 			}
@@ -800,6 +845,7 @@ public class CompanyView implements AbstractCompanyView {
 	public void addCompanyDetailsToGui(String toString) {
 		showCompanyDetails = toString;
 		Label details = new Label(showCompanyDetails);
+		details.setStyle("-fx-font-size: 1.3em;");
 		scrollDetailsMsg.setContent(details);
 	}
 	
