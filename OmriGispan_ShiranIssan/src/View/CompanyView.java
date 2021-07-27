@@ -96,7 +96,7 @@ public class CompanyView implements AbstractCompanyView {
 	private ArrayList<Double> efficiencyEmployees = new ArrayList<Double>();
 	private Label lblEffCompany = new Label("");
 	private String toLoadData = "";
-	
+		
 	//Company name//
 	private String companyName = "";
 
@@ -236,10 +236,10 @@ public class CompanyView implements AbstractCompanyView {
 		gpRoot.add(btnSaveAndExit, 0, 8);
 		gpRoot.setStyle("-fx-font: 14 arial;");
 		
-		//stage.setScene(new Scene(scrollForTitledPanes, 730, 850));
-		stage.setScene(new Scene(gpRoot, 950, 850));
+	//	stage.setScene(new Scene(scrollForTitledPanes, 730, 850));
+		stage.setScene(new Scene(gpRoot, 1100, 850));
 		//stage.getScene().getStylesheets().add("-fx-font: 18 arial;");
-		//stage.getScene().getStylesheets().add(getClass().getResource("dark_theme.css").toString());
+		stage.getScene().getStylesheets().add(getClass().getResource("dark_theme.css").toString());
 		
 		stage.show();
 	}
@@ -456,7 +456,7 @@ public class CompanyView implements AbstractCompanyView {
 		
 		//----Action event for COMBOBOX----//
 		depsComboEmployees.setOnAction((event) -> {
-			int indexDepAddEmployee = depsComboEmployees.getSelectionModel().getSelectedIndex(); //Department Index
+			indexDepAddEmployee = depsComboEmployees.getSelectionModel().getSelectedIndex(); //Department Index
 			rolesComboEmployee.getItems().setAll(arrayOfRolesByIndex.get(indexDepAddEmployee).getItems());
 		});
 		
@@ -648,15 +648,15 @@ public class CompanyView implements AbstractCompanyView {
 					endHour.getValueFactory().setValue(syncHour.getValue() - 15);
 				} else
 					endHour.getValueFactory().setValue(syncHour.getValue() + 9);
-				for (GuiEventsListener l : allListeners) {
-					l.setSyncRoleFromGui(indexDepSyncPrefRoles, indexRoleSyncPrefRoles, isSync.isSelected(), syncHour.getValue(), endHour.getValue());
-				}
 			}
 		});
 		
-
+		syncHour.setOnMouseClicked((event) -> {
+			for (GuiEventsListener l : allListeners) {
+				l.setSyncRoleFromGui(indexDepSyncPrefRoles, indexRoleSyncPrefRoles, isSync.isSelected(), syncHour.getValue(), endHour.getValue());
+			}
+		});
 		
-		//create nodes
 		isSync.setDisable(true);
 		canChangePref.setDisable(true);
 		syncHour.setDisable(true);
@@ -670,33 +670,24 @@ public class CompanyView implements AbstractCompanyView {
 			rolesComboSyncPrefRoles.getSelectionModel().clearSelection();
 			isSync.setDisable(true);
 			canChangePref.setDisable(true);
-
-
 		});
-
-		depsComboSyncPrefRoles.setOnMouseClicked((event) -> {
-			if (depsComboSyncPrefRoles.getItems().isEmpty() && indexDepSyncPrefRoles != -1 && indexRoleSyncPrefRoles != -1) { // Prevent errors
-				rolesComboSyncPrefRoles.getItems().setAll(arrayOfRolesByIndex.get(indexDepSyncPrefRoles).getItems());
-			}
-		});
-
+		
 		rolesComboSyncPrefRoles.setOnAction((event) -> {
 			indexRoleSyncPrefRoles = rolesComboSyncPrefRoles.getSelectionModel().getSelectedIndex();
 			isSync.setDisable(false);
 			canChangePref.setDisable(false);
-			if (indexRoleSyncPrefRoles != -1) {
-
-				for (GuiEventsListener l : allListeners) {
+			for (GuiEventsListener l : allListeners) {
+				if (indexRoleSyncPrefRoles != -1) {
 					boolean isRoleSync = l.getSyncRoleFromGui(indexDepSyncPrefRoles, indexRoleSyncPrefRoles);
 					boolean isRolePref = l.getPrefRoleFromGui(indexDepSyncPrefRoles, indexRoleSyncPrefRoles);
 					isSync.setSelected(isRoleSync);
 					canChangePref.setSelected(isRolePref);
+					syncHour.setDisable(!isRoleSync);
 				}
-
 			}
 		});
 		
-
+		
 		canChangePref.setOnAction((event) -> {
 			for (GuiEventsListener l : allListeners) {
 				l.setPrefRoleFromGui(indexDepSyncPrefRoles, indexRoleSyncPrefRoles, canChangePref.isSelected());
@@ -709,25 +700,14 @@ public class CompanyView implements AbstractCompanyView {
 				l.setSyncRoleFromGui(indexDepSyncPrefRoles, indexRoleSyncPrefRoles, isSync.isSelected(), syncHour.getValue(), endHour.getValue());
 			}
 		});
-
-//		isSync.selectedProperty()
-//				.addListener((ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
-//					syncHour.setDisable(!isSync.isSelected());
-//					for (GuiEventsListener l : allListeners) {
-//						if (l.getSyncDepartmentFromGui(indexDepSyncPrefRoles)) {
-//							dialog("The choice does not matter because department force all roles to be synchronized");
-//						} else
-//							
-//					}
-//				});
 		
 		
 		gpRoot.add(lblDepartmentChoise, 0, 0);
 		gpRoot.add(depsComboSyncPrefRoles, 0, 1);
 		gpRoot.add(rolesComboSyncPrefRoles, 0, 2);
 		gpRoot.add(isSync, 0, 3);
-		gpRoot.add(gridPaneForPrefHours, 1, 3);
-		gpRoot.add(canChangePref, 0, 4);
+		gpRoot.add(gridPaneForPrefHours, 0, 4);
+		gpRoot.add(canChangePref, 0, 5);
 
 		
 		return gpRoot;
@@ -826,22 +806,20 @@ public class CompanyView implements AbstractCompanyView {
 	public void addRoleToGui(String roleName, int indexDepartment) {
 		dialog("Role " + "\"" + roleName + "\"" + " was added to the company");
 		arrayOfRolesByIndex.get(indexDepartment).getItems().add(roleName);
-		if (indexDepAddEmployee != -1) { //Prevent errors
+		if (indexDepAddEmployee != -1) {
 		    rolesComboEmployee.getItems().setAll(arrayOfRolesByIndex.get(indexDepAddEmployee).getItems());
 		}
-		if (indexDepSyncPrefRoles != -1) { //Prevent errors
+		if (indexDepSyncPrefRoles != -1) {
 		    rolesComboSyncPrefRoles.getItems().setAll(arrayOfRolesByIndex.get(indexDepSyncPrefRoles).getItems());
 		}
 
 	}
-
 	@Override
 	public void addEmployeeToGui(String name) {
 		dialog("Employee " + "\"" + name + "\"" + " was added to the company");
 		employeesNames.add(name);
 	}
-	
-	@Override
+		@Override
 	public void addCompanyDetailsToGui(String toString) {
 		showCompanyDetails = toString;
 		Label details = new Label(showCompanyDetails);

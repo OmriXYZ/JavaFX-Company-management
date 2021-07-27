@@ -13,11 +13,10 @@ import javafx.scene.layout.BorderPane;
 public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		
 		Company company = new Company("");
 		AbstractCompanyView theView1 = new CompanyView(primaryStage);
-		Controller controller1 = new Controller(company, theView1);
-		theView1.loadData();
+		Controller controller1 = new Controller(company, theView1); //Do actions between model and gui
+		theView1.loadData(); //Open dialog, ask the user about loading recent data
 	}
 	
 	public static void main(String[] args) {
