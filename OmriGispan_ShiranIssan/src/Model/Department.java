@@ -13,6 +13,7 @@ public class Department implements Synchronizable, Preferences, Serializable {
 	private int begHour;
 	private int endHour;
 	private final int BASEHOURS = 160;
+	private final double PERCENTFROMBONUS = 0.2;
 
 
 	public Department(String name) {
@@ -31,16 +32,6 @@ public class Department implements Synchronizable, Preferences, Serializable {
 
 	public void calcTotalEfficiency () {
 		totalEfficiency = 0;
-//		if (!canChangePreferences) {
-//			for (Role role : roles) {
-//				role.changePreference(canChangePreferences);
-//			}
-//		}
-//		if (mustEmployeeSync) {
-//			for (Role role : roles) {
-//				role.sync(mustEmployeeSync, begHour, endHour);
-//			}
-//		}
 		for (Role role : roles) {
 			role.calcTotalEfficiency();
 		}
@@ -79,17 +70,17 @@ public class Department implements Synchronizable, Preferences, Serializable {
 		this.mustEmployeeSync = b;
 		this.begHour = syncHour;
 		this.endHour = endHour;
-//		for (Role role : roles) {
-//			role.sync(b);
-//		}
+		for (int i = 0; i < roles.size(); i++) {
+			for (int j = 0; j < roles.get(i).getEmployees().size(); j++) {
+				roles.get(i).getEmployees().get(j).setFinalHours(syncHour);
+			}
+		}
+
 	}
 
 	@Override
 	public void changePreference(boolean b) {
 		this.canChangePreferences = b;
-//		for (Role role : roles) {
-//			role.changePreference(b);
-//		}
 	}
 	
 	public int getSyncHour() {
@@ -123,6 +114,10 @@ public class Department implements Synchronizable, Preferences, Serializable {
 	
 	public int getBASEHOURS() {
 		return BASEHOURS;
+	}
+
+	public double getPercentFromBonus() {
+		return PERCENTFROMBONUS;
 	}
 
 	

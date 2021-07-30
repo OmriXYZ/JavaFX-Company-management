@@ -51,17 +51,14 @@ public class Role implements Preferences, Synchronizable, Serializable {
 		this.begHour = syncHour;
 		this.endHour = endHour;
 		this.mustEmployeeSync = b;
-//		for (Employee employee : employees) {
-//			employee.sync(b, syncHour, endHour);
-//		}
+		for (Employee employee : employees) {
+			employee.sync(b, syncHour, endHour);
+		}
 	}
 
 	@Override
 	public void changePreference(boolean b) {
 		this.canChangePreferences = b;
-//		for (Employee employee : employees) {
-//			employee.changePreference(b);
-//		}		
 	}
 	
 	public boolean getCanChangePreferences() {
@@ -89,6 +86,14 @@ public class Role implements Preferences, Synchronizable, Serializable {
 			str += employee.toString();
 		}
 		return str;
+	}
+	
+	public Employee getEmployee(int indexEmployee) {
+		return employees.get(indexEmployee);
+	}
+	
+	public ArrayList<Employee> getEmployees() {
+		return employees;
 	}
 	
 	public int getSyncHour() {

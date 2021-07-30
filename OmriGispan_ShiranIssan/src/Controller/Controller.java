@@ -3,8 +3,6 @@ package Controller;
 import java.util.ArrayList;
 
 import Model.Company;
-import Model.Department;
-import Model.Role;
 import View.AbstractCompanyView;
 import listeners.GuiEventsListener;
 import listeners.ModelEventsListener;
@@ -20,11 +18,6 @@ public class Controller implements ModelEventsListener, GuiEventsListener {
 		view.registerListener(this);
 		company.registerListener(this);
 		
-	}
-
-	@Override
-	public void setCompanyNameFromGui(String name) { //Set name of company
-		company.setName(name);
 	}
 
 	@Override
@@ -47,12 +40,25 @@ public class Controller implements ModelEventsListener, GuiEventsListener {
 
 	@Override
 	public void addEmployeeFromGui(String name, int indexRole, int indexDepartment, int begHour, String pref, String typeOfWorker, int hoursMonth, int payPerHour) throws Exception { //Send request to create employee from gui to model.
-		company.addEmployee(name, indexRole, indexDepartment, begHour, pref, typeOfWorker, hoursMonth, payPerHour);
+		company.addEmployee(name, indexRole, indexDepartment, begHour, pref, typeOfWorker, hoursMonth, payPerHour, 0);
+	}
+	
+	@Override
+	public void addEmployeeBonusFromGui(String name, int indexRole, int indexDepartment, int begHour, String pref,
+			String typeOfWorker, int hoursMonth, int payPerHour, int salesPerMonth) throws Exception {
+		company.addEmployee(name, indexRole, indexDepartment, begHour, pref, typeOfWorker, hoursMonth, payPerHour, salesPerMonth);
+		
 	}
 
 	@Override
 	public void setedCompanyNameFromCompany(String name) { //Model send to gui that company name was seted.
 		view.dialog(name + " has been set to be the company name");
+		view.setCompanyNameToGui(name);
+	}
+	
+	@Override
+	public void setCompanyNameFromGui(String name) { //Set name of company
+		company.setName(name);
 	}
 
 	@Override
@@ -101,7 +107,6 @@ public class Controller implements ModelEventsListener, GuiEventsListener {
 		} catch (Exception e) {
 			view.dialog(e.getMessage());
 		}
-		
 	}
 
 	@Override
@@ -126,7 +131,11 @@ public class Controller implements ModelEventsListener, GuiEventsListener {
 
 	@Override
 	public void calculateEfficiencyFromGui() { //Sends a request to calculate efficiency from gui to model
-		company.calcTotalEfficiency();
+		try {
+			company.calcTotalEfficiency();
+		} catch (Exception e) {
+			view.dialog(e.getMessage());
+		}
 	}
 
 	@Override
@@ -168,5 +177,7 @@ public class Controller implements ModelEventsListener, GuiEventsListener {
 		}
 		
 	}
+
+
 	
 }

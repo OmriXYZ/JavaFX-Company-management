@@ -1,5 +1,6 @@
 package Model;
 
+//Class for send information to efficiency tables
 public class EfficiencyType {
 	private String name;
 	private double efficiency;

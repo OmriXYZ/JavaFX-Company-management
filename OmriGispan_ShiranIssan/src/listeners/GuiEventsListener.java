@@ -19,4 +19,5 @@ public interface GuiEventsListener {
 	void calculateEfficiencyFromGui();
 	void saveDataFromUi();
 	void loadDataFromUi();
+	void addEmployeeBonusFromGui(String name, int indexRole, int indexDepartment, int begHour, String pref, String typeOfWorker, int hoursMonth, int payPerHour, int salesPerMonth) throws Exception;
 }

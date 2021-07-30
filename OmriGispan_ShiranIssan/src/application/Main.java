@@ -15,7 +15,7 @@ public class Main extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		Company company = new Company("");
 		AbstractCompanyView theView1 = new CompanyView(primaryStage);
-		Controller controller1 = new Controller(company, theView1); //Do actions between model and gui
+		Controller controller = new Controller(company, theView1); //Do actions between model and gui
 		theView1.loadData(); //Open dialog, ask the user about loading recent data
 	}
 	
