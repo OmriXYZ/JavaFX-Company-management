@@ -31,6 +31,7 @@ public class Role implements Preferences, Synchronizable, Serializable {
 	}
 	
 	public void calcTotalEfficiency () {
+		
 		totalEfficiency = 0;
 		for (Employee employee : employees) {
 			employee.calcEfficiency();
@@ -70,7 +71,7 @@ public class Role implements Preferences, Synchronizable, Serializable {
 	}
 	
 	public String toString() {
-		String str = "Role: " + this.name + "\n";
+		String str = "----Role: " + this.name + "----\n";
 		if (mustEmployeeSync) {
 			str += "Employees must be synchronized by hours\n";
 			str += "Employees works at: " + begHour + " - " + endHour + "\n";
@@ -81,6 +82,7 @@ public class Role implements Preferences, Synchronizable, Serializable {
 		} else
 			str += "Employees can't change their prefernces\n";
 
+		str += "-----List of Employees-----\n";
 		
 		for (Employee employee : employees) {
 			str += employee.toString();

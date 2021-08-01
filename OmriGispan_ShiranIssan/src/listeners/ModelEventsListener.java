@@ -2,9 +2,6 @@ package listeners;
 
 import java.util.ArrayList;
 
-import Model.Department;
-import Model.Role;
-
 public interface ModelEventsListener {
 	void setedCompanyNameFromCompany(String name);
 	void addedDepartmentFromCompany(String departmentName);

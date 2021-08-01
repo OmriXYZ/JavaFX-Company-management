@@ -63,36 +63,47 @@ public class CompanyView implements AbstractCompanyView {
 	private int indexDepSyncPrefRoles = -1;	 //Department index - Change sync&pref roles pane
 	private int indexRoleSyncPrefRoles = -1; //Role index - Change sync&pref roles pane
 
+	//toString Pane
 	private String showCompanyDetails = "";
 	private ScrollPane scrollDetailsMsg;
 	
+	//Efficiency ArrayList for departments and employee
 	private ArrayList<Double> efficiencyDepartments = new ArrayList<Double>();
 	private ArrayList<Double> efficiencyEmployees = new ArrayList<Double>();
+	//total efficiency - using on showing the results
 	private Label lblEffCompany = new Label("");
+	//using for loading the data by string answer
 	private String toLoadData = "";
+	//Company name on top
 	private Label lblCompanyName;
+	//some string on top (using for disable it when loading data)
 	private Label lblAcceptName;
+	//textfield company name on top (using for disable it when loading data)
 	private TextField fieldCompanyName;
+	//some string on top (using for disable it when loading data)
 	private Label lblMenu;
-	
+	//Divides categories into tabs
 	private TabPane tabPane;
-	
+	//The main pane
 	private GridPane gpRoot;
-	
+	//Graph pane (using on "changeRolePrefSyncBuildPane()")
 	private GridPane graphPane;
 
 	public CompanyView(Stage stage) throws Exception {
 		
+		//Define tab pane on top
 		tabPane = new TabPane();
 		tabPane.setDisable(true);
 		tabPane.setPrefWidth(1200);
 		
+		//Define company name
 		lblCompanyName = new Label("");
 		lblCompanyName.setStyle("-fx-font-size: 18; -fx-text-fill: white");
 		
-		//Set View Settings//
+		//Set name of window
 		stage.setTitle("Company Menu");
 
+		//Define the main pane
 		gpRoot = new GridPane();
 		gpRoot.setPadding(new Insets(10));
 		gpRoot.setHgap(10);
@@ -121,7 +132,7 @@ public class CompanyView implements AbstractCompanyView {
 		fieldCompanyName.setMaxWidth(120);
 		lblAcceptName = new Label("(Press enter for accept company name)");
 		fieldCompanyName.setOnKeyPressed((event) -> {
-			if (event.getCode() == KeyCode.ENTER && !fieldCompanyName.getText().isEmpty()) {
+			if (event.getCode() == KeyCode.ENTER && !fieldCompanyName.getText().isEmpty()) { //Accept company name when press ENTER
 				setCompanyName(fieldCompanyName.getText());
 				gpRoot.getChildren().remove(lblMenu);
 				gpRoot.getChildren().remove(fieldCompanyName);
@@ -130,10 +141,12 @@ public class CompanyView implements AbstractCompanyView {
 			}
 		});
 		
+		//ContextMenu using for tabpane on top
 		ContextMenu contextMenu = new ContextMenu();
 		tabPane.setContextMenu(contextMenu);
 		tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE); //So they can not close tabs
 		
+		//Define Adding all tabs (Build each tab happens on methods)
 		Tab addDepTab = new Tab("Add department");
 		addDepTab.setContent(addDepartmentBuildPane());
 		Tab addRoleTab = new Tab("Add role");
@@ -149,6 +162,7 @@ public class CompanyView implements AbstractCompanyView {
 		Tab showEffTab = new Tab("Show profit or loss");
 		showEffTab.setContent(showResultsBuildPane());
 		
+		//Adding all tabs to the tabpane
 		tabPane.getTabs().add(addDepTab);
 		tabPane.getTabs().add(addRoleTab);
 		tabPane.getTabs().add(addEmployeeTab);
@@ -157,14 +171,16 @@ public class CompanyView implements AbstractCompanyView {
 		tabPane.getTabs().add(changeRoleTab);
 		tabPane.getTabs().add(showEffTab);
 		
+		//Adding TabPane, company name label, button for save and exit
 		gpRoot.add(lblCompanyName, 0, 0);
 		gpRoot.add(lblMenu, 0, 1, 2, 1);
 		gpRoot.add(fieldCompanyName, 0, 2, 1, 1);
 		gpRoot.add(lblAcceptName, 1, 2);
 		gpRoot.add(tabPane, 0, 3, 2, 2);
 		gpRoot.add(btnSaveAndExit, 0, 8);
-		gpRoot.setStyle("-fx-font: 14 arial;");
+		gpRoot.setStyle("-fx-font: 14 arial;"); //Set bigger text
 		
+		//Set scene, size of the window, set new css for design, show the window
 		stage.setScene(new Scene(gpRoot, 1150, 850));
 		stage.getScene().getStylesheets().add(getClass().getResource("dark_theme.css").toString());
 		stage.show();
@@ -223,7 +239,7 @@ public class CompanyView implements AbstractCompanyView {
 			public void handle(ActionEvent action) {
 				indexDepAddRole = depsComboAddRole.getSelectionModel().getSelectedIndex(); //Index of selected department
 				for (GuiEventsListener l : allListeners) {
-					if (!nameOfRole.getText().isEmpty() && indexDepAddRole != -1 ) {
+					if (!nameOfRole.getText().isEmpty() && indexDepAddRole != -1 ) { //Check that textbox is empty and no department selected
 						l.addRoleFromGui(nameOfRole.getText(), indexDepAddRole);
 					} else
 						dialog("Do not leave empty field please");
@@ -249,6 +265,7 @@ public class CompanyView implements AbstractCompanyView {
 
 		// create nodes
 		scrollDetailsMsg = new ScrollPane();
+		scrollDetailsMsg.setPrefSize(700, 700);
 
 		Label lblCompanyDetailsMsg = new Label("Company Details:");
 
@@ -269,8 +286,9 @@ public class CompanyView implements AbstractCompanyView {
 		gridPaneForPrefHours.setPadding(new Insets(2));
 		gridPaneForPrefHours.setHgap(2);
 		gridPaneForPrefHours.setVgap(2);
-		Label lblPreferredhours = new Label("Preferred hours:");
 		
+		//Define nodes
+		Label lblPreferredhours = new Label("Preferred hours:");
 		Label lblEmployeeName = new Label("Enter employee's name:");
 		TextField nameOfEmployee = new TextField();
 		Label lblHoursOnMonth = new Label("How many hours the employee worked a month?");
@@ -282,7 +300,7 @@ public class CompanyView implements AbstractCompanyView {
 		lblSales.setDisable(true);
 		bonusSalesField.setDisable(true);
 
-		//Preference Hours
+		//Preference Hours using spinner class
 		Spinner<Integer> begHour = new Spinner<>(0, 24, 7);
 		begHour.setMaxWidth(65);
 		Spinner<Integer> endHour = new Spinner<>(0, 23, 16);
@@ -292,16 +310,8 @@ public class CompanyView implements AbstractCompanyView {
 		gridPaneForPrefHours.add(begHour, 1, 0);
 		gridPaneForPrefHours.add(endHour, 2, 0);
 		gridPaneForPrefHours.add(lblPreferredhours, 0, 0);
-
-		begHour.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
-	        if (!"".equals(newValue)) {
-	        	if (begHour.getValue() >= 15) {
-		            endHour.getValueFactory().setValue(begHour.getValue()-15);
-				} else
-		            endHour.getValueFactory().setValue(begHour.getValue() + 9);
-	        } 
-	    });
 		
+		//Define radiobuttons
 		Label lblEmployeeType = new Label("Choose your employee's salary type:");
 		RadioButton c1 = new RadioButton("By hour");
 		c1.setUserData("HOUR");
@@ -316,6 +326,7 @@ public class CompanyView implements AbstractCompanyView {
 		c3.setToggleGroup(radioButtonSalaryType);
 		c1.setSelected(true); //Prevent unselected error
 		
+		//Event for salary type radio button
 		radioButtonSalaryType.selectedToggleProperty().addListener((obserableValue, old_toggle, new_toggle) -> {
 		    if (radioButtonSalaryType.getSelectedToggle() == c1) {
 		    	lblHoursOnMonth.setDisable(false);
@@ -337,6 +348,7 @@ public class CompanyView implements AbstractCompanyView {
 		    }
 		});
 		
+		//Define radiobuttons
 		Label lblEmployeePref = new Label("Choose your employee's prefernce:");
 		RadioButton c4 = new RadioButton("Start working early");
 		c4.setUserData("EARLIER");
@@ -353,6 +365,7 @@ public class CompanyView implements AbstractCompanyView {
 		c7.setToggleGroup(radioButtonPref);
 		c4.setSelected(true); //Prevent unselected error
 		
+		//Event for preference radio button
 		radioButtonPref.selectedToggleProperty().addListener((obserableValue, old_toggle, new_toggle) -> {
 			if (radioButtonPref.getSelectedToggle() == c4) {
 				begHour.getValueFactory().setValue(7);
@@ -365,10 +378,7 @@ public class CompanyView implements AbstractCompanyView {
 			}
 		});
 		
-		Tooltip msg = new Tooltip("Can't start working between 15 to 00");
-		begHour.setTooltip(msg);
-
-		
+		//Event for spinner (time change)
 		begHour.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
 			if (!"".equals(newValue)) {
 				if (begHour.getValue() < 16 && radioButtonPref.getSelectedToggle() == c7) {
@@ -385,9 +395,18 @@ public class CompanyView implements AbstractCompanyView {
 			}
 		});
 		
+		//Event for spinner limit start working at 15 (time change)
+		begHour.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
+	        if (!"".equals(newValue)) {
+	        	if (begHour.getValue() >= 15) {
+		            endHour.getValueFactory().setValue(begHour.getValue()-15);
+				} else
+		            endHour.getValueFactory().setValue(begHour.getValue() + 9);
+	        } 
+	    });
+		
 		Label lblDepartmentChoose = new Label("Choose Department:");
 		Label lblRoleChoose = new Label("Choose Role to assign:");
-		
 		Button btnCreateEmployee = new Button("Create Employee");
 		
 		//----Action event for COMBOBOX----//
@@ -396,7 +415,7 @@ public class CompanyView implements AbstractCompanyView {
 			rolesComboEmployee.getItems().setAll(arrayOfRolesByIndex.get(indexDepAddEmployee).getItems());
 		});
 		
-		//----Action event for Button----//
+		//----Action event for create employee Button----//
 		btnCreateEmployee.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent action) {
@@ -432,6 +451,7 @@ public class CompanyView implements AbstractCompanyView {
 			}
 		});
 		
+		//Adding nodes to gridpane
 		gpRoot.add(lblEmployeeName, 0, 0);
 		gpRoot.add(nameOfEmployee, 1, 0);
 		gpRoot.add(lblPayPerHour, 0, 1);
@@ -493,6 +513,7 @@ public class CompanyView implements AbstractCompanyView {
 		gridPaneForPrefHours.add(endHour, 2, 0);
 		gridPaneForPrefHours.add(lblPreferredhours, 0, 0);
 
+		//Event for spinner (time change)
 		syncHour.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
 			if (!"".equals(newValue)) {
 				if (syncHour.getValue() > 15 && syncHour.getValue() < 25) {
@@ -518,15 +539,16 @@ public class CompanyView implements AbstractCompanyView {
 		String depPrefTrue = "The department doesn’t allow roles and employees to change preference";
 		String depPrefFalse = "The department allows roles to decide whether to change the preference for employees";
 
+		//Event happend when user change department from combobox
 		depsComboSyncPrefDeps.setOnAction((event) -> {
 		    indexDepSyncPrefDeps = depsComboSyncPrefDeps.getSelectionModel().getSelectedIndex();
 			isSync.setDisable(false);
 			canChangePref.setDisable(false);
 			for (GuiEventsListener l : allListeners) {
-				boolean isDepartmentSync = l.getSyncDepartmentFromGui(indexDepSyncPrefDeps);
-				boolean isDepartmentPref = l.getPrefDepartmentFromGui(indexDepSyncPrefDeps);
-				isSync.setSelected(isDepartmentSync);
-				canChangePref.setSelected(isDepartmentPref);
+				boolean isDepartmentSync = l.getSyncDepartmentFromGui(indexDepSyncPrefDeps); //get isMustSync value from company
+				boolean isDepartmentPref = l.getPrefDepartmentFromGui(indexDepSyncPrefDeps); //get canChangePref value from company
+				isSync.setSelected(isDepartmentSync); //set checkbox value isMustSync value from company
+				canChangePref.setSelected(isDepartmentPref); //set checkbox value canChangePref value from company
 				if (isDepartmentSync) {
 					lblDescription.setText(depSyncTrue);
 					lblDescription.setStyle("-fx-font-size: 16; -fx-text-fill: red");
@@ -545,6 +567,7 @@ public class CompanyView implements AbstractCompanyView {
 			}
 		});
 		
+		//Event happend when user change the value of checkbox canChangePref
 		canChangePref.selectedProperty().addListener(
 			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
 						if (!new_val) {
@@ -558,6 +581,8 @@ public class CompanyView implements AbstractCompanyView {
 						l.setPrefDepartmentFromGui(indexDepSyncPrefDeps, canChangePref.isSelected());
 					}
 			      });
+		
+		//Event happend when user change the value of checkbox isSync
 		isSync.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
 			if (new_val) {
 				lblDescription.setStyle("-fx-font-size: 16; -fx-text-fill: red");
@@ -568,7 +593,6 @@ public class CompanyView implements AbstractCompanyView {
 				syncHour.getValueFactory().setValue(8);
 				endHour.getValueFactory().setValue(17);
 			}
-
 			syncHour.setDisable(!isSync.isSelected());
 			for (GuiEventsListener l : allListeners) {
 				l.setSyncDepartmentFromGui(indexDepSyncPrefDeps, isSync.isSelected(), syncHour.getValue(),
@@ -615,6 +639,7 @@ public class CompanyView implements AbstractCompanyView {
 		gridPaneForPrefHours.add(endHour, 2, 0);
 		gridPaneForPrefHours.add(lblPreferredhours, 0, 0);
 
+		//Event for spinner (time change)
 		syncHour.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
 			if (!"".equals(newValue)) {
 				if (syncHour.getValue() > 15 && syncHour.getValue() < 25) {
@@ -627,6 +652,7 @@ public class CompanyView implements AbstractCompanyView {
 			}
 		});
 		
+		//Event for spinner (time change) - send values to company
 		syncHour.setOnMouseClicked((event) -> {
 			for (GuiEventsListener l : allListeners) {
 				l.setSyncRoleFromGui(indexDepSyncPrefRoles, indexRoleSyncPrefRoles, isSync.isSelected(), syncHour.getValue(), endHour.getValue());
@@ -637,11 +663,24 @@ public class CompanyView implements AbstractCompanyView {
 		canChangePref.setDisable(true);
 		syncHour.setDisable(true);
 		
+		Button btnUpdateGraph = new Button("Update graph");
+		
+		//Event for update graph button
+		btnUpdateGraph.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent action) {
+				if (indexRoleSyncPrefRoles != -1) {
+					updateGraphPane();
+				}
+			}
+			
+		});
+		
+		//Event for change selection on roles combobox
 		rolesComboSyncPrefRoles.setOnAction((event) -> {
 			indexRoleSyncPrefRoles = rolesComboSyncPrefRoles.getSelectionModel().getSelectedIndex();
 			isSync.setDisable(false);
 			canChangePref.setDisable(false);
-			System.out.println("enable");
 			for (GuiEventsListener l : allListeners) {
 				if (indexRoleSyncPrefRoles != -1) {
 					boolean isRoleSync = l.getSyncRoleFromGui(indexDepSyncPrefRoles, indexRoleSyncPrefRoles);
@@ -649,13 +688,16 @@ public class CompanyView implements AbstractCompanyView {
 					isSync.setSelected(isRoleSync);
 					canChangePref.setSelected(isRolePref);
 					syncHour.setDisable(!isRoleSync);
+					gpRoot.getChildren().remove(graphPane);
 				}
 			}
-			graphPane = showGraph(gpRoot, depsComboSyncPrefRoles.getItems().get(indexDepSyncPrefRoles).toString(), rolesComboSyncPrefRoles.getItems().get(indexRoleSyncPrefRoles).toString());
-			updateGraphPane();
+			if (indexRoleSyncPrefRoles != -1) {
+				graphPane = showGraph(gpRoot, depsComboSyncPrefRoles.getItems().get(indexDepSyncPrefRoles).toString(), rolesComboSyncPrefRoles.getItems().get(indexRoleSyncPrefRoles).toString());
+			}
+
 		});
 		
-		//----Action event for COMBOBOX----//
+		//----Action event for department COMBOBOX----//
 		depsComboSyncPrefRoles.setOnAction((event) -> {
 			indexDepSyncPrefRoles = depsComboSyncPrefRoles.getSelectionModel().getSelectedIndex(); // Department Index
 			rolesComboSyncPrefRoles.getItems().setAll(arrayOfRolesByIndex.get(indexDepSyncPrefRoles).getItems());
@@ -663,25 +705,25 @@ public class CompanyView implements AbstractCompanyView {
 			rolesComboSyncPrefRoles.getSelectionModel().clearSelection();
 			isSync.setDisable(true);
 			canChangePref.setDisable(true);
-			System.out.println("disable");
 			gpRoot.getChildren().remove(graphPane);
 		});
 
+		//Event for change boolean values - send it to the company
 		canChangePref.setOnAction((event) -> {
 			for (GuiEventsListener l : allListeners) {
 				l.setPrefRoleFromGui(indexDepSyncPrefRoles, indexRoleSyncPrefRoles, canChangePref.isSelected());
 			}
-			updateGraphPane();
 		});
 		
+		//Event for change boolean values - send it to the company
 		isSync.setOnAction((event) -> {
 			syncHour.setDisable(!isSync.isSelected());
 			for (GuiEventsListener l : allListeners) {
 				l.setSyncRoleFromGui(indexDepSyncPrefRoles, indexRoleSyncPrefRoles, isSync.isSelected(), syncHour.getValue(), endHour.getValue());
 			}
-			updateGraphPane();
 		});
 		
+		//Adding nodes to gridpane
 		gpRoot.add(lblDepartmentChoise, 0, 0);
 		gpRoot.add(depsComboSyncPrefRoles, 0, 1);
 		gpRoot.add(rolesComboSyncPrefRoles, 0, 2);
@@ -689,10 +731,12 @@ public class CompanyView implements AbstractCompanyView {
 		gpRoot.add(gridPaneForPrefHours, 0, 4);
 		gpRoot.add(canChangePref, 0, 5);
 		
+		gpRoot.add(btnUpdateGraph, 5, 10);
+		
 		return gpRoot;
 	}
 
-	private GridPane showGraph(GridPane gp, String depName, String roleName) {
+	private GridPane showGraph(GridPane gp, String depName, String roleName) { //Using for showing graph on (changeRolePrefSyncBuildPane())
 		GridPane grid = new GridPane();
 		grid.setVgap(5);
 		grid.setHgap(12);
@@ -733,9 +777,6 @@ public class CompanyView implements AbstractCompanyView {
 		prefLine2.setEndY(130);
 		prefLine2.setStrokeWidth(7);
 
-		System.out.println(dep.getTranslateY());
-		System.out.println(role.getTranslateY());
-
 		int roleAdd = 10;
 		//grid.setGridLinesVisible(true);
 		grid.add(dep, 2, 0);
@@ -756,7 +797,7 @@ public class CompanyView implements AbstractCompanyView {
 
 	}
 	
-	private void updateGraphPane() {
+	private void updateGraphPane() { //Using for update graph on (changeRolePrefSyncBuildPane())
 		// 2 - prefDepartmentLine
 		// 3 - syncDepartmentLine
 		// 4 - syncRoleLine
@@ -792,7 +833,7 @@ public class CompanyView implements AbstractCompanyView {
 	}
 
 	@SuppressWarnings("unchecked")
-	private GridPane showResultsBuildPane() {
+	private GridPane showResultsBuildPane() { //Show efficiency tables and total efficiency
 		
 		GridPane gpRoot = new GridPane();
 		gpRoot.setPadding(new Insets(10));
@@ -861,17 +902,17 @@ public class CompanyView implements AbstractCompanyView {
 	
 	//----MVC----//
 	@Override
-	public void registerListener(GuiEventsListener listener) {
+	public void registerListener(GuiEventsListener listener) { //MVC
 		allListeners.add(listener);
 	}
 
 	@Override
-	public void setCompanyNameToGui(String name) {
+	public void setCompanyNameToGui(String name) { //Set company labal from company to gui
 		lblCompanyName.setText(name);
 	}
 
 	@Override
-	public void addDepartmentToGui(String departmentName) {
+	public void addDepartmentToGui(String departmentName) { //Add department from company to gui
 		depsComboAddRole.getItems().add(departmentName);
 		dialog("Department " + "\"" + departmentName + "\"" + " was added to the company");
 		depsComboEmployees.getItems().add(departmentName);
@@ -882,7 +923,7 @@ public class CompanyView implements AbstractCompanyView {
 	}
 
 	@Override
-	public void addRoleToGui(String roleName, int indexDepartment) {
+	public void addRoleToGui(String roleName, int indexDepartment) { //Add role from company to gui
 
 		dialog("Role " + "\"" + roleName + "\"" + " was added to the company");
 		arrayOfRolesByIndex.get(indexDepartment).getItems().add(roleName);
@@ -895,13 +936,13 @@ public class CompanyView implements AbstractCompanyView {
 	}
 	
 	@Override
-	public void addEmployeeToGui(String name) {
+	public void addEmployeeToGui(String name) { //Add employee from company to gui
 		dialog("Employee " + "\"" + name + "\"" + " was added to the company");
 		employeesNames.add(name);
 	}
 	
 	@Override
-	public void addCompanyDetailsToGui(String toString) {
+	public void addCompanyDetailsToGui(String toString) { //Add toString details from company to gui
 		showCompanyDetails = toString;
 		Label details = new Label(showCompanyDetails);
 		details.setStyle("-fx-font-size: 1.3em;");
@@ -909,23 +950,23 @@ public class CompanyView implements AbstractCompanyView {
 	}
 	
 	@Override
-	public void sendTotalEfficiencyToGui(Double totalEfficiency) {
+	public void sendTotalEfficiencyToGui(Double totalEfficiency) { //send total efficiency value from company to gui
 		lblEffCompany.setText("" + totalEfficiency);
 	}
 
 	@Override
-	public void sendDepartmentsEfficiencyToGui(ArrayList<Double> departmentsEfficiency) {
+	public void sendDepartmentsEfficiencyToGui(ArrayList<Double> departmentsEfficiency) { //Send department's efficiencies from company to gui
 		efficiencyDepartments.clear();
 		efficiencyDepartments.addAll(departmentsEfficiency);
 	}
 
 	@Override
-	public void sendEmployeesEfficiencyToGui(ArrayList<Double> employeesEfficiency) {
+	public void sendEmployeesEfficiencyToGui(ArrayList<Double> employeesEfficiency) { //Send employee's efficiencies from company to gui
 		efficiencyEmployees.clear();
 		efficiencyEmployees.addAll(employeesEfficiency);
 	}
 	
-	public void dialog(String msg) {
+	public void dialog(String msg) { //Show dialog with get a string
 		JOptionPane.showMessageDialog(null, msg);
 	}
 	

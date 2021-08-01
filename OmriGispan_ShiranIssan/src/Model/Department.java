@@ -88,7 +88,7 @@ public class Department implements Synchronizable, Preferences, Serializable {
 	}
 	
 	public String toString() {
-		String str = "Department: " + this.name + "\n";
+		String str = "------Department: " + this.name + "------\n";
 		if (mustEmployeeSync) {
 			str += "Employees must be synchronized by hours\n";
 			str += "Employees works at: " + begHour + " - " + endHour + "\n";
@@ -98,7 +98,7 @@ public class Department implements Synchronizable, Preferences, Serializable {
 			str += "Employees can change their prefernces\n";
 		} else
 			str += "Employees can't change their prefernces\n";
-		str += "List of Roles:\n";
+		str += "-----List of Roles-----\n";
 		for (Role role : roles) {
 			str += role.toString();
 		}

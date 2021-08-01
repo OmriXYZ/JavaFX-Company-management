@@ -8,7 +8,6 @@ public class EmployeeByBaseBonus extends EmployeeByBase {
 		this.type = "By Base Bonus";
 		this.salesPerMonth = salesPerMonth;
 		calculateSalary();
-		System.out.println(salesPerMonth);
 	}
 	
 	public void calculateSalary() {

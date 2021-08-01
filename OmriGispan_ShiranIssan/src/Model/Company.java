@@ -14,9 +14,9 @@ import listeners.ModelEventsListener;
 public class Company implements Serializable {
 	private String name;
 	private ArrayList<Department> departments; 	//All departments in the company
-	private ArrayList<Employee> employees; 		//All employees in the company
 	private double totalEfficiency; 			//Value of all department efficiencies
 	ArrayList<Double> employeesEfficiency;
+	private int sizeEmployees;
 	
 	//MVC
 	private ArrayList<ModelEventsListener> listeners;
@@ -24,9 +24,9 @@ public class Company implements Serializable {
 	public Company(String name) {
 		this.name = name;
 		this.departments = new ArrayList<Department>();
-		this.employees = new ArrayList<Employee>();
 		this.employeesEfficiency = new ArrayList<Double>();
-		totalEfficiency = 0;
+		this.totalEfficiency = 0;
+		this.sizeEmployees = 0;
 		
 		//MVC
 		listeners = new ArrayList<ModelEventsListener>();
@@ -64,7 +64,6 @@ public class Company implements Serializable {
 			} else //BASE BONUS
 				emp = new EmployeeByBaseBonus(name, role, dep, begHour, payPerHour, pref, salesPerMonth);
 		
-		employees.add(emp);
 		role.addEmployeeToRole(emp); //Add employee to role under department
 		fireAddedEmployee(name);
 	}
@@ -75,7 +74,8 @@ public class Company implements Serializable {
 	}
 
 	public String toString() { //toString, get strings from departments roles and employees
-		String str = "List of Departments:\n\n";
+		String str = "Company name: " + this.name + "\n";
+		str += "\nList of Departments:\n\n";
 		for (Department department : departments) {
 			str += department.toString() + "\n";
 		}
@@ -159,6 +159,7 @@ public class Company implements Serializable {
 	
 	//----MVC----//Fire Methods to (Controller -> Gui)
 	private void fireAddedEmployee(String name) {
+		sizeEmployees++;
 		for (ModelEventsListener l : listeners) {
 			l.addedEmployeeFromCompany(name);
 			l.sendCompanyDetails(toString());
@@ -191,9 +192,24 @@ public class Company implements Serializable {
 	}
 	
 	private void fireEmployeesEfficiency() throws Exception {
-		if (!departments.isEmpty() && !employees.isEmpty()) {
+		
+		boolean isEmployeesEmpty = false;
+		
+		for (Department department : departments) {
+			for (Role role : department.getRoles()) {
+				for (Employee employee : role.getEmployees()) {
+					if (role.getEmployees().isEmpty()) {
+						isEmployeesEmpty = true;
+						break;
+					}
+				}
+			}
+		}
+		
+		
+		
+		if (!departments.isEmpty() && !isEmployeesEmpty) {
 			employeesEfficiency.clear();
-			System.out.println("emp:" + employees.get(0).getEfficiency());
 			int depSize = departments.size();
 			for (int i = 0; i < depSize; i++) {
 				int rolesSize = departments.get(i).getRoles().size();
@@ -241,9 +257,6 @@ public class Company implements Serializable {
 		outFile = new ObjectOutputStream(new FileOutputStream("departments.dat"));
 		outFile.writeObject(departments);
 		outFile.close();
-		outFile = new ObjectOutputStream(new FileOutputStream("employees.dat"));
-		outFile.writeObject(employees);
-		outFile.close();
 		outFile = new ObjectOutputStream(new FileOutputStream("totalEfficiency.dat"));
 		outFile.writeObject(totalEfficiency);
 		outFile.close();
@@ -260,30 +273,43 @@ public class Company implements Serializable {
 			name = (String)inFile.readObject();
 			inFile = new ObjectInputStream(new FileInputStream("departments.dat"));
 			departments = (ArrayList<Department>)inFile.readObject();
-			inFile = new ObjectInputStream(new FileInputStream("employees.dat"));
-			employees = (ArrayList<Employee>)inFile.readObject();
 			inFile = new ObjectInputStream(new FileInputStream("totalEfficiency.dat"));
 			totalEfficiency = (Double)inFile.readObject();
 			inFile = new ObjectInputStream(new FileInputStream("employeesEfficiency.dat"));
 			employeesEfficiency = (ArrayList<Double>)inFile.readObject();
-			fireDataMsg("Loaded");
 			
 			//Send data to view
 			fireSettedName(this.name);
-			for (Department department : departments) { // SEND DEPARTMENTS
+			
+			for (Department department : departments) {
 				fireAddedDepartment(department.getName());
-			}
-			for (Employee employee : employees) { // SEND EMPLOYEES
-				fireAddedEmployee(employee.name);
-			}
-			for (int i = 0; i < departments.size(); i++) { //SEND ROLES
-				int sizeRoles = departments.get(i).getRoles().size();
-				for (int j = 0; j < sizeRoles; j++) {
-					String nameRole = departments.get(i).getRole(j).getName();
-					fireAddedRole(nameRole, i);
+				for (Role role : department.getRoles()) {
+					fireAddedRole(role.getName(), departments.size()-1);
+					for (Employee employee : role.getEmployees()) {
+						fireAddedEmployee(employee.name);
+					}
 				}
 			}
+			
+			
+			
+//			for (Department department : departments) { // SEND DEPARTMENTS
+//				fireAddedDepartment(department.getName());
+//			}
+//			for (Employee employee : employees) { // SEND EMPLOYEES
+//				fireAddedEmployee(employee.name);
+//			}
+//			for (int i = 0; i < departments.size(); i++) { //SEND ROLES
+//				int sizeRoles = departments.get(i).getRoles().size();
+//				for (int j = 0; j < sizeRoles; j++) {
+//					String nameRole = departments.get(i).getRole(j).getName();
+//					fireAddedRole(nameRole, i);
+//				}
+//			}
 			fireTotalEfficiency(); // SEND TOTAL EFFICIENCY
+			
+			fireDataMsg("Loaded");
+			
 			//////////END SENDING DATA/////////
 		} catch (FileNotFoundException e) {
 			throw new Exception("Can't find all data");
@@ -297,7 +323,7 @@ public class Company implements Serializable {
 	private void fireDataMsg(String type) { //Send "save or load" message to Gui through Controller
 		String dataMsg = type +": \n";
 		dataMsg += "Departments: " + departments.size() + "\n";
-		dataMsg += "Employees: " + employees.size() + "\n";
+		dataMsg += "Employees: " + sizeEmployees + "\n";
 		for (ModelEventsListener l : listeners) {
 			l.sendDataMsg(dataMsg);
 		}
